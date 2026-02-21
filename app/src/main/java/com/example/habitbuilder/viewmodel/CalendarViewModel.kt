@@ -1,6 +1,7 @@
 package com.example.habitbuilder.viewmodel
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,11 +22,17 @@ class CalendarViewModel() : ViewModel() {
 
     lateinit var context: Context
     var routineId: Int = -1
-    val routineTitle = MutableLiveData<String>()
-    val monthItems = MutableLiveData<List<CalendarItem>>()
-    val selectedDayMessage = MutableLiveData<Pair<String, String>>()
+    private val _routineTitle = MutableLiveData<String>()
+    val routineTitle: LiveData<String> = _routineTitle
 
-    val currentMonthTitle = MutableLiveData<String>()
+    private val _monthItems = MutableLiveData<List<CalendarItem>>()
+    val monthItems: LiveData<List<CalendarItem>> = _monthItems
+
+    private val _selectedDayMessage = MutableLiveData<Pair<String, String>>()
+    val selectedDayMessage: LiveData<Pair<String, String>> = _selectedDayMessage
+
+    private val _currentMonthTitle = MutableLiveData<String>()
+    val currentMonthTitle: LiveData<String> = _currentMonthTitle
 
     private var currentMonthStart: Calendar =
         Calendar.getInstance().apply {
@@ -45,7 +52,7 @@ class CalendarViewModel() : ViewModel() {
 
         val year = currentMonthStart.get(Calendar.YEAR)
 
-        currentMonthTitle.postValue("$monthName $year")
+        _currentMonthTitle.postValue("$monthName $year")
     }
 
     fun nextMonth() {
@@ -62,7 +69,7 @@ class CalendarViewModel() : ViewModel() {
         viewModelScope.launch {
             val routine = RoutineRepository.get(context, routineId)
             routine?.let {
-                routineTitle.postValue("${it.name} Calendar")
+                _routineTitle.postValue("${it.name} Calendar")
             }
         }
     }
@@ -77,7 +84,7 @@ class CalendarViewModel() : ViewModel() {
 
             routine?.let {
                 val items = buildCalendarItems(actions, completedByDay, routine)
-                monthItems.postValue(items)
+                _monthItems.postValue(items)
             }
         }
     }
@@ -170,7 +177,7 @@ class CalendarViewModel() : ViewModel() {
             val formattedDate =
                 SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date.time)
 
-            selectedDayMessage.postValue("Actions on $formattedDate" to message)
+            _selectedDayMessage.postValue("Actions on $formattedDate" to message)
         }
     }
 
