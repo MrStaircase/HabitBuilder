@@ -48,18 +48,13 @@ class ActionActivity : ComponentActivity() {
             tvActionTitle.text = action.description
             edActionDescription.setText(action.description)
             edDurationMinutes.setText(action.durationMinutes.toString())
-        }
 
-
-        viewModel.actionDescription.observe(this){ value ->
-            if (edActionDescription.text.toString() != value) {
-                edActionDescription.setText(value)
-                edActionDescription.setSelection(value.length)
+            if (edActionDescription.text.toString() != action.description) {
+                edActionDescription.setText(action.description)
+                edActionDescription.setSelection(action.description.length)
             }
-        }
 
-        viewModel.actionDuration.observe(this){ value ->
-            val display = value?.toString() ?: ""
+            val display = action.durationMinutes.toString()
             if (edDurationMinutes.text.toString() != display) {
                 edDurationMinutes.setText(display)
                 edDurationMinutes.setSelection(display.length)
@@ -69,11 +64,11 @@ class ActionActivity : ComponentActivity() {
 
     fun loadActions(){
         edActionDescription.doAfterTextChanged {
-            viewModel.setActionDescription(it.toString())
+            viewModel.setActionDescription(this, it.toString())
         }
 
         edDurationMinutes.doAfterTextChanged {
-            viewModel.setActionDuration(it.toString().toIntOrNull())
+            viewModel.setActionDuration(this, it.toString().toIntOrNull())
         }
 
         btnSaveAction.setOnClickListener {

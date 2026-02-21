@@ -7,37 +7,39 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.habitbuilder.data.entity.ActionEntity
 import com.example.habitbuilder.data.repository.ActionRepository
+import com.example.habitbuilder.data.repository.RoutineRepository
 import kotlinx.coroutines.launch
 
 class ActionViewModel() : ViewModel() {
     private val _action = MutableLiveData<ActionEntity>()
     val action: LiveData<ActionEntity> = _action
-
-    private val _actionDescription = MutableLiveData<String>()
-    val actionDescription: LiveData<String> = _actionDescription
-
-    private val _actionDuration = MutableLiveData<Int>()
-    val actionDuration: LiveData<Int> = _actionDuration
-
+    
     fun loadAction(context: Context, actionId: Int) {
-        if (_action.value != null) return
-        viewModelScope.launch {
-            val actionEntity = ActionRepository.get(context, actionId)
-            actionEntity?.let {
-                _action.postValue(actionEntity)
-                _actionDescription.postValue(it.description)
-                _actionDuration.postValue(it.durationMinutes)
+        _action.value?.let {
+            viewModelScope.launch {
+                val actionEntity = ActionRepository.get(context, actionId)
+                actionEntity?.let {
+                    _action.postValue(actionEntity)
+                }
             }
         }
     }
 
-    fun setActionDescription(description: String){
-        _actionDescription.postValue(description)
+    fun setActionDescription(context: Context, description: String){
+        _action.value?.let{ action ->
+            action.description = description
+            viewModelScope.launch { ActionRepository.update(context, action) }
+            loadAction(context, action.id)
+        }
     }
 
-    fun setActionDuration(duration: Int?){
+    fun setActionDuration(context: Context, duration: Int?){
         duration?.let{
-            _actionDuration.postValue(duration)
+            _action.value?.let{ action ->
+                action.durationMinutes = duration
+                viewModelScope.launch { ActionRepository.update(context, action) }
+                loadAction(context, action.id)
+            }
         }
     }
 
