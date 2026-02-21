@@ -16,9 +16,6 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class RoutineViewModel() : ViewModel(){
-    var routineId: Int = -1
-    lateinit var context: Context
-
     private val _actionId = MutableLiveData<Int>()
     val actionId: LiveData<Int> = _actionId
 
@@ -41,7 +38,7 @@ class RoutineViewModel() : ViewModel(){
     val actionDuration: LiveData<Int> = _actionDuration
 
 
-    fun loadRoutine() {
+    fun loadRoutine(context: Context, routineId: Int) {
         if (_routine.value != null) return
         viewModelScope.launch {
             val routineEntity = RoutineRepository.get(context, routineId)
@@ -54,7 +51,7 @@ class RoutineViewModel() : ViewModel(){
         }
     }
 
-    fun saveRoutine(name: String) {
+    fun saveRoutine(context: Context, name: String) {
         _routine.value?.let {
             it.name = name
             viewModelScope.launch { RoutineRepository.update(context, it) }
@@ -87,18 +84,12 @@ class RoutineViewModel() : ViewModel(){
         }
     }
 
-    fun deleteRoutine() {
+    fun deleteRoutine(context: Context) {
         viewModelScope.launch {
             _routine.value?.let { r ->
                 ActionRepository.deleteAllByRoutine(context, r.id)
                 RoutineRepository.delete(context, r)
             }
         }
-    }
-
-    fun loadCalendar(){
-        val intent = Intent(context, CalendarActivity::class.java)
-        intent.putExtra("routineId", routineId)
-        context.startActivity(intent)
     }
 }

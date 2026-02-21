@@ -33,9 +33,7 @@ class RoutineActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_routine)
 
-        viewModel.context = this
         routineId = intent.getIntExtra("routineId", -1)
-        viewModel.routineId = routineId
 
         loadViews()
         loadObservers()
@@ -44,7 +42,7 @@ class RoutineActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadRoutine()
+        viewModel.loadRoutine(this, routineId)
     }
 
     fun loadViews(){
@@ -94,7 +92,7 @@ class RoutineActivity : ComponentActivity() {
         }
 
         btnSaveRoutine.setOnClickListener {
-            viewModel.saveRoutine(edRoutineName.text.toString())
+            viewModel.saveRoutine(this, edRoutineName.text.toString())
             finish()
         }
 
@@ -105,7 +103,7 @@ class RoutineActivity : ComponentActivity() {
         }
 
         btnDelete.setOnClickListener {
-            viewModel.deleteRoutine()
+            viewModel.deleteRoutine(this)
             finish()
         }
 
