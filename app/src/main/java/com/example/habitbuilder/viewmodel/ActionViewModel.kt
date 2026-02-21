@@ -10,9 +10,6 @@ import com.example.habitbuilder.data.repository.ActionRepository
 import kotlinx.coroutines.launch
 
 class ActionViewModel() : ViewModel() {
-    var actionId: Int = -1
-    lateinit var context: Context
-
     private val _action = MutableLiveData<ActionEntity>()
     val action: LiveData<ActionEntity> = _action
 
@@ -22,7 +19,7 @@ class ActionViewModel() : ViewModel() {
     private val _actionDuration = MutableLiveData<Int>()
     val actionDuration: LiveData<Int> = _actionDuration
 
-    fun loadAction() {
+    fun loadAction(context: Context, actionId: Int) {
         if (_action.value != null) return
         viewModelScope.launch {
             val actionEntity = ActionRepository.get(context, actionId)
@@ -44,7 +41,7 @@ class ActionViewModel() : ViewModel() {
         }
     }
 
-    fun saveAction(description: String, durationMinutes: Int) {
+    fun saveAction(context: Context, description: String, durationMinutes: Int) {
         viewModelScope.launch {
             _action.value?.let {
                 it.description = description
@@ -54,7 +51,7 @@ class ActionViewModel() : ViewModel() {
         }
     }
 
-    fun deleteAction() {
+    fun deleteAction(context: Context) {
         viewModelScope.launch {
             _action.value?.let { ActionRepository.delete(context, it) }
         }

@@ -12,6 +12,7 @@ import com.example.habitbuilder.viewmodel.ActionViewModel
 
 class ActionActivity : ComponentActivity() {
     private val viewModel: ActionViewModel by viewModels()
+    private var actionId: Int = -1
     private lateinit var tvActionTitle: TextView
     private lateinit var edActionDescription: EditText
     private lateinit var edDurationMinutes: EditText
@@ -22,8 +23,7 @@ class ActionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_action)
 
-        viewModel.context = this
-        viewModel.actionId = intent.getIntExtra("actionId", -1)
+        actionId = intent.getIntExtra("actionId", -1)
 
         loadViews()
         loadObserver()
@@ -32,7 +32,7 @@ class ActionActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadAction()
+        viewModel.loadAction(this, actionId)
     }
 
     fun loadViews(){
@@ -78,6 +78,7 @@ class ActionActivity : ComponentActivity() {
 
         btnSaveAction.setOnClickListener {
             viewModel.saveAction(
+                this,
                 edActionDescription.text.toString(),
                 edDurationMinutes.text.toString().toIntOrNull() ?: 0
             )
@@ -85,7 +86,7 @@ class ActionActivity : ComponentActivity() {
         }
 
         btnDeleteAction.setOnClickListener {
-            viewModel.deleteAction()
+            viewModel.deleteAction(this)
             finish()
         }
     }
