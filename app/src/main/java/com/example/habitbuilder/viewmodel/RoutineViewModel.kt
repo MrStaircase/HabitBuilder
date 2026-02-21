@@ -18,7 +18,7 @@ import java.util.Calendar
 class RoutineViewModel() : ViewModel(){
     var routineId: Int = -1
     lateinit var context: Context
-    
+
     private val _actionId = MutableLiveData<Int>()
     val actionId: LiveData<Int> = _actionId
 
@@ -45,8 +45,8 @@ class RoutineViewModel() : ViewModel(){
         if (_routine.value != null) return
         viewModelScope.launch {
             val routineEntity = RoutineRepository.get(context, routineId)
-            _routine.postValue(routineEntity)
             routineEntity?.let {
+                _routine.postValue(routineEntity)
                 _routineName.postValue(routineEntity.name)
                 _triggerTime.postValue(routineEntity.triggerTime)
             }
@@ -75,7 +75,9 @@ class RoutineViewModel() : ViewModel(){
     }
 
     fun setActionDuration(duration: Int?){
-        _actionDuration.postValue(duration)
+        duration?.let {
+            _actionDuration.postValue(duration)
+        }
     }
 
     fun createAction(context: Context, action: ActionEntity){

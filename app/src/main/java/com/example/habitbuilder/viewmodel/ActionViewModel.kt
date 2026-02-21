@@ -26,8 +26,8 @@ class ActionViewModel() : ViewModel() {
         if (_action.value != null) return
         viewModelScope.launch {
             val actionEntity = ActionRepository.get(context, actionId)
-            _action.postValue(actionEntity)
             actionEntity?.let {
+                _action.postValue(actionEntity)
                 _actionDescription.postValue(it.description)
                 _actionDuration.postValue(it.durationMinutes)
             }
@@ -39,7 +39,9 @@ class ActionViewModel() : ViewModel() {
     }
 
     fun setActionDuration(duration: Int?){
-        _actionDuration.postValue(duration)
+        duration?.let{
+            _actionDuration.postValue(duration)
+        }
     }
 
     fun saveAction(description: String, durationMinutes: Int) {
