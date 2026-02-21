@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Routine Builder</string>
+    <string name="routine_example">Routine Example</string>
+    <string name="enter_action_description">Enter Action Description</string>
+    <string name="duration">Duration / Delay to next action (minutes)</string>
+    <string name="delete_action">Delete Action</string>
+    <string name="save_action">Save action</string>
+    <string name="habit_builder">Habit Builder</string>
+    <string name="new_routine">New Routine</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
+    <string name="sun">Sun</string>
+    <string name="enter_routine_name">Enter Routine Name</string>
+    <string name="calendar">Calendar</string>
+    <string name="new_action">New Action</string>
+    <string name="save_routine">Save Routine</string>
+    <string name="delete_routine">Delete Routine</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
+    <string name="routine_name">Routine Name</string>
+    <string name="duration_in_minutes">Duration in minutes</string>
+</resources>

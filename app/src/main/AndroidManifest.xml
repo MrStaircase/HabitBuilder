@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.RoutineBuilder">
+        <activity android:name=".view.activity.RoutineActivity"
+            android:label="Routine Manager"/>
+        <activity
+            android:name=".view.activity.ActionActivity"
+            android:label="Action Manager"/>
+        <activity
+            android:name=".view.activity.CalendarActivity"
+            android:label="Calendar"/>
+        <activity
+            android:name=".view.activity.CreateRoutineActivity"
+            android:label="Create New Routine"/>
+        <activity
+            android:name=".view.activity.CreateActionActivity"
+            android:label="Create New Action"/>
+        <activity
+            android:name=".view.activity.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RoutineBuilder">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".notification.receiver.CompletedReceiver"/>
+        <receiver android:name=".notification.receiver.InProgressReceiver"/>
+        <receiver android:name=".notification.receiver.SkipReceiver"/>
+    </application>
+
+</manifest>
