@@ -13,7 +13,8 @@ class ActionViewModel() : ViewModel() {
     var actionId: Int = -1
     lateinit var context: Context
 
-    val action = MutableLiveData<ActionEntity>()
+    private val _action = MutableLiveData<ActionEntity>()
+    val action: LiveData<ActionEntity> = _action
 
     private val _actionDescription = MutableLiveData<String>()
     val actionDescription: LiveData<String> = _actionDescription
@@ -22,10 +23,10 @@ class ActionViewModel() : ViewModel() {
     val actionDuration: LiveData<Int> = _actionDuration
 
     fun loadAction() {
-        if (action.value != null) return
+        if (_action.value != null) return
         viewModelScope.launch {
             val actionEntity = ActionRepository.get(context, actionId)
-            action.postValue(actionEntity)
+            _action.postValue(actionEntity)
             actionEntity?.let {
                 _actionDescription.postValue(it.description)
                 _actionDuration.postValue(it.durationMinutes)
@@ -43,7 +44,7 @@ class ActionViewModel() : ViewModel() {
 
     fun saveAction(description: String, durationMinutes: Int) {
         viewModelScope.launch {
-            action.value?.let {
+            _action.value?.let {
                 it.description = description
                 it.durationMinutes = durationMinutes
                 ActionRepository.update(context, it)
@@ -53,7 +54,7 @@ class ActionViewModel() : ViewModel() {
 
     fun deleteAction() {
         viewModelScope.launch {
-            action.value?.let { ActionRepository.delete(context, it) }
+            _action.value?.let { ActionRepository.delete(context, it) }
         }
     }
 }
