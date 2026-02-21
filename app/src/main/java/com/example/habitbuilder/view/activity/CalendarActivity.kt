@@ -16,6 +16,7 @@ import java.util.Calendar
 
 class CalendarActivity : ComponentActivity(), OnDayClickListener {
     private val viewModel: CalendarViewModel by viewModels()
+    private var routineId: Int = -1
     private lateinit var tvRoutineTitle: TextView
     private lateinit var calendarRecycler: RecyclerView
     private lateinit var tvMonthLabel: TextView
@@ -26,15 +27,14 @@ class CalendarActivity : ComponentActivity(), OnDayClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
 
-        viewModel.context = this
-        viewModel.routineId = intent.getIntExtra("routineId", -1)
+        routineId = intent.getIntExtra("routineId", -1)
 
         loadViews()
         loadObserves()
         loadActions()
 
-        viewModel.loadRoutine()
-        viewModel.loadMonth()
+        viewModel.loadRoutine(this, routineId)
+        viewModel.loadMonth(this, routineId)
     }
 
     fun loadViews(){
@@ -70,15 +70,15 @@ class CalendarActivity : ComponentActivity(), OnDayClickListener {
 
     fun loadActions(){
         btnPreviousMonth.setOnClickListener {
-            viewModel.previousMonth()
+            viewModel.previousMonth(this, routineId)
         }
 
         btnNextMonth.setOnClickListener {
-            viewModel.nextMonth()
+            viewModel.nextMonth(this, routineId)
         }
     }
 
     override fun onDayClick(date: Calendar) {
-        viewModel.onDayClicked(date)
+        viewModel.onDayClicked(this, routineId, date)
     }
 }

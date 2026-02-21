@@ -19,9 +19,6 @@ import java.util.Calendar
 import java.util.Locale
 
 class CalendarViewModel() : ViewModel() {
-
-    lateinit var context: Context
-    var routineId: Int = -1
     private val _routineTitle = MutableLiveData<String>()
     val routineTitle: LiveData<String> = _routineTitle
 
@@ -55,17 +52,17 @@ class CalendarViewModel() : ViewModel() {
         _currentMonthTitle.postValue("$monthName $year")
     }
 
-    fun nextMonth() {
+    fun nextMonth(context: Context, routineId: Int) {
         currentMonthStart.add(Calendar.MONTH, 1)
-        loadMonth()
+        loadMonth(context, routineId)
     }
 
-    fun previousMonth() {
+    fun previousMonth(context: Context, routineId: Int) {
         currentMonthStart.add(Calendar.MONTH, -1)
-        loadMonth()
+        loadMonth(context, routineId)
     }
 
-    fun loadRoutine() {
+    fun loadRoutine(context: Context, routineId: Int) {
         viewModelScope.launch {
             val routine = RoutineRepository.get(context, routineId)
             routine?.let {
@@ -74,7 +71,7 @@ class CalendarViewModel() : ViewModel() {
         }
     }
 
-    fun loadMonth() {
+    fun loadMonth(context: Context, routineId: Int) {
         loadMonthTitle()
 
         viewModelScope.launch {
@@ -150,7 +147,7 @@ class CalendarViewModel() : ViewModel() {
         }
     }
 
-    fun onDayClicked(date: Calendar) {
+    fun onDayClicked(context: Context, routineId: Int, date: Calendar) {
         viewModelScope.launch {
             val allActions = ActionRepository.getAll(context, routineId)
             val actionsInDate =
