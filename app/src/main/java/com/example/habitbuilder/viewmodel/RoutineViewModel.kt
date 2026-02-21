@@ -18,9 +18,15 @@ import java.util.Calendar
 class RoutineViewModel() : ViewModel(){
     var routineId: Int = -1
     lateinit var context: Context
-    val actionId = MutableLiveData<Int>()
-    val routine = MutableLiveData<RoutineEntity>()
-    val actions = MutableLiveData<List<ActionEntity>>()
+    
+    private val _actionId = MutableLiveData<Int>()
+    val actionId: LiveData<Int> = _actionId
+
+    private val _routine = MutableLiveData<RoutineEntity>()
+    val routine: LiveData<RoutineEntity> = _routine
+
+    private val _actions = MutableLiveData<List<ActionEntity>>()
+    val actions: LiveData<List<ActionEntity>> = _actions
 
     private val _routineName = MutableLiveData<String>()
     val routineName: LiveData<String> = _routineName
@@ -36,20 +42,20 @@ class RoutineViewModel() : ViewModel(){
 
 
     fun loadRoutine() {
-        if (routine.value != null) return
+        if (_routine.value != null) return
         viewModelScope.launch {
             val routineEntity = RoutineRepository.get(context, routineId)
-            routine.postValue(routineEntity)
+            _routine.postValue(routineEntity)
             routineEntity?.let {
                 _routineName.postValue(routineEntity.name)
                 _triggerTime.postValue(routineEntity.triggerTime)
             }
-            actions.postValue(ActionRepository.getAll(context, routineId))
+            _actions.postValue(ActionRepository.getAll(context, routineId))
         }
     }
 
     fun saveRoutine(name: String) {
-        routine.value?.let {
+        _routine.value?.let {
             it.name = name
             viewModelScope.launch { RoutineRepository.update(context, it) }
             NotificationHelper.scheduleFirstAction(context, it)
@@ -75,13 +81,13 @@ class RoutineViewModel() : ViewModel(){
     fun createAction(context: Context, action: ActionEntity){
         viewModelScope.launch{
             val newActionId = ActionRepository.insert(context, action).toInt()
-            actionId.postValue(newActionId)
+            _actionId.postValue(newActionId)
         }
     }
 
     fun deleteRoutine() {
         viewModelScope.launch {
-            routine.value?.let { r ->
+            _routine.value?.let { r ->
                 ActionRepository.deleteAllByRoutine(context, r.id)
                 RoutineRepository.delete(context, r)
             }
