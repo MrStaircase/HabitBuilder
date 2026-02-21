@@ -15,12 +15,10 @@ class ActionViewModel() : ViewModel() {
     val action: LiveData<ActionEntity> = _action
 
     fun loadAction(context: Context, actionId: Int) {
-        _action.value?.let {
-            viewModelScope.launch {
-                val actionEntity = ActionRepository.get(context, actionId)
-                actionEntity?.let {
-                    _action.postValue(actionEntity)
-                }
+        viewModelScope.launch {
+            val actionEntity = ActionRepository.get(context, actionId)
+            actionEntity?.let {
+                _action.postValue(actionEntity)
             }
         }
     }

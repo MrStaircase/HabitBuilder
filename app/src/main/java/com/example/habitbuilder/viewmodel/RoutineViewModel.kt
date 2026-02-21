@@ -28,7 +28,6 @@ class RoutineViewModel() : ViewModel(){
 
 
     fun loadRoutine(context: Context, routineId: Int) {
-        if (_routine.value != null) return
         viewModelScope.launch {
             val routineEntity = RoutineRepository.get(context, routineId)
             routineEntity?.let {

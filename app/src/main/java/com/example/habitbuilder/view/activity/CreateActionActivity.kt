@@ -39,9 +39,6 @@ class CreateActionActivity : ComponentActivity() {
 
     fun loadObservers(){
         viewModel.actionId.observe(this){
-            val intent = Intent(this, ActionActivity::class.java)
-            intent.putExtra("actionId", it)
-            startActivity(intent)
             finish()
         }
 
