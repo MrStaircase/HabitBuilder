@@ -57,38 +57,31 @@ class RoutineActivity : ComponentActivity() {
     }
 
     fun loadObservers(){
-        viewModel.routine.observe(this) { routine ->
+        viewModel.routine.observe(this) { (routine, actions) ->
             tvRoutineTitle.text = "${routine.name} Routine"
 
             btnTime.setOnClickListener {
                 showTimePicker(routine)
             }
-        }
 
-        viewModel.actions.observe(this) { actions ->
+            if (edRoutineName.text.toString() != routine.name) {
+                edRoutineName.setText(routine.name)
+                edRoutineName.setSelection(routine.name.length)
+            }
+
+            btnTime.text = String.format("%02d:%02d",
+                routine.triggerTime.get(Calendar.HOUR_OF_DAY),
+                routine.triggerTime.get(Calendar.MINUTE)
+            )
+
             buttonContainer.layoutManager = LinearLayoutManager(this)
             buttonContainer.adapter = ActionAdapter(actions, this)
-        }
-
-
-        viewModel.routineName.observe(this){ value ->
-            if (edRoutineName.text.toString() != value) {
-                edRoutineName.setText(value)
-                edRoutineName.setSelection(value.length)
-            }
-        }
-
-        viewModel.triggerTime.observe(this){
-            btnTime.text = String.format("%02d:%02d",
-                it.get(Calendar.HOUR_OF_DAY),
-                it.get(Calendar.MINUTE)
-            )
         }
     }
 
     fun loadActions(){
         edRoutineName.doAfterTextChanged {
-            viewModel.setRoutineName(it.toString())
+            viewModel.setRoutineName(this, it.toString())
         }
 
         btnSaveRoutine.setOnClickListener {
@@ -121,7 +114,7 @@ class RoutineActivity : ComponentActivity() {
                 val triggerTime = Calendar.getInstance()
                 triggerTime.set(Calendar.HOUR_OF_DAY, selectedHour)
                 triggerTime.set(Calendar.MINUTE, selectedMinute)
-                viewModel.setTriggerTime(triggerTime)
+                viewModel.setTriggerTime(this, triggerTime)
             },
             routine.triggerTime.get(Calendar.HOUR_OF_DAY),
             routine.triggerTime.get(Calendar.MINUTE),
