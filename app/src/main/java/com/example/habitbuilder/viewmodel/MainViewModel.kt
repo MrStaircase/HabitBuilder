@@ -16,8 +16,12 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class MainViewModel : ViewModel() {
-    val routines = MutableLiveData<List<RoutineEntity>>()
-    val routineId = MutableLiveData<Int>()
+    private val _routines = MutableLiveData<List<RoutineEntity>>()
+    val routines: LiveData<List<RoutineEntity>> = _routines
+
+    private val _routineId = MutableLiveData<Int>()
+    val routineId: LiveData<Int> = _routineId
+
     private val _routineName = MutableLiveData<String>()
     val routineName: LiveData<String> = _routineName
 
@@ -26,7 +30,7 @@ class MainViewModel : ViewModel() {
 
     fun loadRoutines(context: Context) {
         viewModelScope.launch {
-            routines.postValue(RoutineRepository.getAll(context))
+            _routines.postValue(RoutineRepository.getAll(context))
         }
     }
 
@@ -41,7 +45,7 @@ class MainViewModel : ViewModel() {
     fun createRoutine(context: Context, routine: RoutineEntity){
         viewModelScope.launch{
             val newRoutineId = RoutineRepository.insert(context, routine).toInt()
-            routineId.postValue(newRoutineId)
+            _routineId.postValue(newRoutineId)
             NotificationHelper.scheduleFirstAction(context, routine)
         }
     }
