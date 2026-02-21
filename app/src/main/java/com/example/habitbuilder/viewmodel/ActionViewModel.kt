@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class ActionViewModel() : ViewModel() {
     private val _action = MutableLiveData<ActionEntity>()
     val action: LiveData<ActionEntity> = _action
-    
+
     fun loadAction(context: Context, actionId: Int) {
         _action.value?.let {
             viewModelScope.launch {
