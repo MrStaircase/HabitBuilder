@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.data.entity.ActionEntity
 import com.example.habitbuilder.data.repository.ActionRepository
@@ -13,7 +16,21 @@ import com.example.habitbuilder.notification.NotificationHelper
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class RoutineViewModel() : ViewModel(){
+class RoutineViewModel(private val context: Context) : ViewModel(){
+
+    companion object{
+        val Factory: ViewModelProvider.Factory = object: ViewModelProvider.Factory{
+            @Suppress("UNCHECKED_CAST")
+            override fun <T: ViewModel> create(
+                modelClass: Class<T>,
+                extras: CreationExtras
+            ): T{
+                val application = checkNotNull(extras[APPLICATION_KEY])
+                return RoutineViewModel(application as Context) as T
+            }
+        }
+    }
+
     private val _actionId = MutableLiveData<Int>()
     val actionId: LiveData<Int> = _actionId
 
@@ -27,7 +44,7 @@ class RoutineViewModel() : ViewModel(){
     val actionDuration: LiveData<Int> = _actionDuration
 
 
-    fun loadRoutine(context: Context, routineId: Int) {
+    fun loadRoutine(routineId: Int) {
         viewModelScope.launch {
             val routineEntity = RoutineRepository.get(context, routineId)
             routineEntity?.let {
@@ -37,24 +54,13 @@ class RoutineViewModel() : ViewModel(){
         }
     }
 
-    fun saveRoutine(context: Context, name: String) {
+    fun saveRoutine(name: String, time: Calendar) {
         _routine.value?.let { routine ->
             viewModelScope.launch { RoutineRepository.updateName(context, routine.id, name) }
-            NotificationHelper.scheduleFirstAction(context, routine)
-        }
-    }
-
-    fun setRoutineName(context: Context, name: String){
-        _routine.value?.let{ routine ->
-            viewModelScope.launch { RoutineRepository.updateName(context, routine.id, name) }
-            loadRoutine(context, routine.id)
-        }
-    }
-
-    fun setTriggerTime(context: Context, time: Calendar){
-        _routine.value?.let{ routine ->
             viewModelScope.launch { RoutineRepository.updateTriggerTime(context, routine.id, time) }
-            loadRoutine(context, routine.id)
+            loadRoutine(routine.id)
+            val updatedRoutine = _routine.value ?: routine
+            NotificationHelper.scheduleFirstAction(context, updatedRoutine)
         }
     }
 
@@ -68,14 +74,14 @@ class RoutineViewModel() : ViewModel(){
         }
     }
 
-    fun createAction(context: Context, action: ActionEntity){
+    fun createAction(action: ActionEntity){
         viewModelScope.launch{
             val newActionId = ActionRepository.insert(context, action).toInt()
             _actionId.postValue(newActionId)
         }
     }
 
-    fun deleteRoutine(context: Context) {
+    fun deleteRoutine() {
         viewModelScope.launch {
             _routine.value?.let { routine ->
                 ActionRepository.deleteAllByRoutine(context, routine.id)

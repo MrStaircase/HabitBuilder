@@ -1,7 +1,6 @@
 package com.example.habitbuilder.view.activity
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -14,7 +13,7 @@ import com.example.habitbuilder.viewmodel.RoutineViewModel
 import java.util.Calendar
 
 class CreateActionActivity : ComponentActivity() {
-    val viewModel: RoutineViewModel by viewModels()
+    val viewModel: RoutineViewModel by viewModels{ RoutineViewModel.Factory }
     private var routineId: Int = -1
     private lateinit var edActionDescription: EditText
     private lateinit var edDuration: EditText
@@ -87,7 +86,7 @@ class CreateActionActivity : ComponentActivity() {
                     durationMinutes = duration
                 )
 
-                viewModel.createAction(this, action)
+                viewModel.createAction(action)
             }
         }
     }

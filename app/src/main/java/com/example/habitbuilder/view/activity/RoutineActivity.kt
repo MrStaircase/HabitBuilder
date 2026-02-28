@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habitbuilder.view.adapter.ActionAdapter
 import com.example.habitbuilder.R
-import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.viewmodel.RoutineViewModel
+import com.example.habitbuilder.viewmodel.TempViewModel
 import java.util.Calendar
 
 class RoutineActivity : ComponentActivity() {
-    val viewModel: RoutineViewModel by viewModels()
+    private val viewModel: RoutineViewModel by viewModels{ RoutineViewModel.Factory }
+    private val tempViewModel: TempViewModel by viewModels()
     private var routineId: Int = -1
     private lateinit var tvRoutineTitle: TextView
     private lateinit var edRoutineName: EditText
@@ -42,7 +43,7 @@ class RoutineActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadRoutine(this, routineId)
+        viewModel.loadRoutine(routineId)
     }
 
     fun loadViews(){
@@ -60,32 +61,60 @@ class RoutineActivity : ComponentActivity() {
         viewModel.routine.observe(this) { routine ->
             tvRoutineTitle.setText("${routine.name} Routine")
 
-            btnTime.setOnClickListener {
-                showTimePicker(routine)
-            }
 
-            if (edRoutineName.text.toString() != routine.name) {
+            if (tempViewModel.name.value == null){
                 edRoutineName.setText(routine.name)
-                edRoutineName.setSelection(routine.name.length)
             }
 
-            btnTime.text = String.format("%02d:%02d",
-                routine.triggerTime.get(Calendar.HOUR_OF_DAY),
-                routine.triggerTime.get(Calendar.MINUTE)
-            )
+            if (tempViewModel.triggerTime.value == null){
+                btnTime.setOnClickListener {
+                    showTimePicker(routine.triggerTime)
+                }
+
+                btnTime.text = String.format("%02d:%02d",
+                    routine.triggerTime.get(Calendar.HOUR_OF_DAY),
+                    routine.triggerTime.get(Calendar.MINUTE)
+                )
+            }
 
             buttonContainer.layoutManager = LinearLayoutManager(this)
             buttonContainer.adapter = ActionAdapter(routine.actions, this)
+        }
+
+        tempViewModel.name.observe(this){ name ->
+            if (edRoutineName.text.toString() != name) {
+                edRoutineName.setText(name)
+                edRoutineName.setSelection(name.length)
+            }
+        }
+
+        tempViewModel.triggerTime.observe(this){ triggerTime ->
+            btnTime.setOnClickListener {
+                showTimePicker(triggerTime)
+            }
+
+            btnTime.text = String.format("%02d:%02d",
+                triggerTime.get(Calendar.HOUR_OF_DAY),
+                triggerTime.get(Calendar.MINUTE)
+            )
         }
     }
 
     fun loadActions(){
         edRoutineName.doAfterTextChanged {
-            viewModel.setRoutineName(this, it.toString())
+            tempViewModel.setRoutineName(it.toString())
         }
 
         btnSaveRoutine.setOnClickListener {
-            viewModel.saveRoutine(this, edRoutineName.text.toString())
+            var time: Calendar = Calendar.getInstance()
+            tempViewModel.triggerTime.value?.let {
+                time = it
+            } ?: run {
+                viewModel.routine.value?.let {
+                    time = it.triggerTime
+                }
+            }
+            viewModel.saveRoutine(edRoutineName.text.toString(), time)
             finish()
         }
 
@@ -96,7 +125,7 @@ class RoutineActivity : ComponentActivity() {
         }
 
         btnDelete.setOnClickListener {
-            viewModel.deleteRoutine(this)
+            viewModel.deleteRoutine()
             finish()
         }
 
@@ -107,17 +136,17 @@ class RoutineActivity : ComponentActivity() {
         }
     }
 
-    fun showTimePicker(routine: Routine){
+    fun showTimePicker(triggerTime: Calendar){
         TimePickerDialog(
             this,
             { _, selectedHour, selectedMinute ->
                 val triggerTime = Calendar.getInstance()
                 triggerTime.set(Calendar.HOUR_OF_DAY, selectedHour)
                 triggerTime.set(Calendar.MINUTE, selectedMinute)
-                viewModel.setTriggerTime(this, triggerTime)
+                tempViewModel.setTriggerTime(triggerTime)
             },
-            routine.triggerTime.get(Calendar.HOUR_OF_DAY),
-            routine.triggerTime.get(Calendar.MINUTE),
+            triggerTime.get(Calendar.HOUR_OF_DAY),
+            triggerTime.get(Calendar.MINUTE),
             true
         ).show()
     }
