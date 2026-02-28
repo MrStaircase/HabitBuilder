@@ -25,8 +25,7 @@ class ActionViewModel() : ViewModel() {
 
     fun setActionDescription(context: Context, description: String){
         _action.value?.let{ action ->
-            action.description = description
-            viewModelScope.launch { ActionRepository.update(context, action) }
+            viewModelScope.launch { ActionRepository.updateDescription(context, action.id, description) }
             loadAction(context, action.id)
         }
     }
@@ -34,8 +33,7 @@ class ActionViewModel() : ViewModel() {
     fun setActionDuration(context: Context, duration: Int?){
         duration?.let{
             _action.value?.let{ action ->
-                action.durationMinutes = duration
-                viewModelScope.launch { ActionRepository.update(context, action) }
+                viewModelScope.launch { ActionRepository.updateDuration(context, action.id, duration) }
                 loadAction(context, action.id)
             }
         }

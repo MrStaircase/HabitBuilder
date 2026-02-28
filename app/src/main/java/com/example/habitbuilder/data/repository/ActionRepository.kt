@@ -18,6 +18,14 @@ object ActionRepository {
         dao(context).update(action)
     }
 
+    suspend fun updateDescription(context: Context, id: Int,  description: String){
+        dao(context).updateDescription(id, description)
+    }
+
+    suspend fun updateDuration(context: Context, id: Int,  duration: Int){
+        dao(context).updateDuration(id, duration)
+    }
+
     suspend fun getAll(context: Context) : List<ActionEntity> {
         return dao(context).getAll()
     }

@@ -17,6 +17,12 @@ interface ActionDao {
     @Update
     suspend fun update(action: ActionEntity)
 
+    @Query("UPDATE actions SET description = :description WHERE id = :id")
+    suspend fun updateDescription(id:Int, description: String)
+
+    @Query("UPDATE actions SET durationMinutes = :duration WHERE id = :id")
+    suspend fun updateDuration(id:Int, duration: Int)
+
     @Query("SELECT * FROM actions")
     suspend fun getAll(): List<ActionEntity>
 
