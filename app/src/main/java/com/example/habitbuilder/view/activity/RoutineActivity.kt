@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.habitbuilder.view.adapter.ActionAdapter
 import com.example.habitbuilder.R
 import com.example.habitbuilder.data.Routine
-import com.example.habitbuilder.data.entity.RoutineEntity
 import com.example.habitbuilder.viewmodel.RoutineViewModel
 import java.util.Calendar
 

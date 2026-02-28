@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habitbuilder.data.Action
-import com.example.habitbuilder.data.entity.ActionEntity
 import com.example.habitbuilder.view.activity.ActionActivity
 
 class ActionAdapter(
