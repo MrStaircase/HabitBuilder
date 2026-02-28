@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.data.entity.ActionEntity
 import com.example.habitbuilder.data.entity.CompletionEntity
 import com.example.habitbuilder.data.entity.RoutineEntity
@@ -16,8 +17,8 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class MainViewModel : ViewModel() {
-    private val _routines = MutableLiveData<List<RoutineEntity>>()
-    val routines: LiveData<List<RoutineEntity>> = _routines
+    private val _routines = MutableLiveData<List<Routine>>()
+    val routines: LiveData<List<Routine>> = _routines
 
     private val _routineId = MutableLiveData<Int>()
     val routineId: LiveData<Int> = _routineId
@@ -30,7 +31,7 @@ class MainViewModel : ViewModel() {
 
     fun loadRoutines(context: Context) {
         viewModelScope.launch {
-            _routines.postValue(RoutineRepository.getAll(context))
+            _routines.postValue(RoutineRepository.getAll(context).map { Routine(it, emptyList()) })
         }
     }
 
@@ -46,7 +47,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch{
             val newRoutineId = RoutineRepository.insert(context, routine).toInt()
             _routineId.postValue(newRoutineId)
-            NotificationHelper.scheduleFirstAction(context, routine)
+            NotificationHelper.scheduleFirstAction(context, Routine(routine, emptyList()))
         }
     }
 
