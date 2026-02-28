@@ -5,20 +5,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.habitbuilder.data.entity.ActionEntity
+import com.example.habitbuilder.data.Action
 import com.example.habitbuilder.data.repository.ActionRepository
-import com.example.habitbuilder.data.repository.RoutineRepository
 import kotlinx.coroutines.launch
 
 class ActionViewModel() : ViewModel() {
-    private val _action = MutableLiveData<ActionEntity>()
-    val action: LiveData<ActionEntity> = _action
+    private val _action = MutableLiveData<Action>()
+    val action: LiveData<Action> = _action
 
     fun loadAction(context: Context, actionId: Int) {
         viewModelScope.launch {
             val actionEntity = ActionRepository.get(context, actionId)
             actionEntity?.let {
-                _action.postValue(actionEntity)
+                _action.postValue(Action(actionEntity))
             }
         }
     }
@@ -40,18 +39,13 @@ class ActionViewModel() : ViewModel() {
     }
 
     fun saveAction(context: Context, description: String, durationMinutes: Int) {
-        viewModelScope.launch {
-            _action.value?.let {
-                it.description = description
-                it.durationMinutes = durationMinutes
-                ActionRepository.update(context, it)
-            }
-        }
+        setActionDescription(context, description)
+        setActionDuration(context, durationMinutes)
     }
 
     fun deleteAction(context: Context) {
         viewModelScope.launch {
-            _action.value?.let { ActionRepository.delete(context, it) }
+            _action.value?.let { ActionRepository.delete(context, it.id) }
         }
     }
 }
