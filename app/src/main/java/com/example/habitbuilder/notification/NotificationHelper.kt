@@ -14,8 +14,8 @@ import com.example.habitbuilder.notification.worker.ActionWorker
 import com.example.habitbuilder.notification.receiver.CompletedReceiver
 import com.example.habitbuilder.notification.receiver.InProgressReceiver
 import com.example.habitbuilder.R
+import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.notification.receiver.SkipReceiver
-import com.example.habitbuilder.data.entity.RoutineEntity
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -35,7 +35,7 @@ object NotificationHelper {
         }
     }
 
-    fun scheduleFirstAction(context: Context, routine: RoutineEntity) {
+    fun scheduleFirstAction(context: Context, routine: Routine) {
         val now = Calendar.getInstance().apply {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
