@@ -47,16 +47,14 @@ class RoutineViewModel() : ViewModel(){
 
     fun setRoutineName(context: Context, name: String){
         _routine.value?.let{ (routine, _) ->
-            routine.name = name
-            viewModelScope.launch { RoutineRepository.update(context, routine) }
+            viewModelScope.launch { RoutineRepository.updateName(context, routine.id, name) }
             loadRoutine(context, routine.id)
         }
     }
 
     fun setTriggerTime(context: Context, time: Calendar){
         _routine.value?.let{ (routine, _) ->
-            routine.triggerTime = time
-            viewModelScope.launch { RoutineRepository.update(context, routine) }
+            viewModelScope.launch { RoutineRepository.updateTriggerTime(context, routine.id, time) }
             loadRoutine(context, routine.id)
         }
     }
