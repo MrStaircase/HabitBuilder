@@ -9,9 +9,11 @@ import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import com.example.habitbuilder.R
 import com.example.habitbuilder.viewmodel.ActionViewModel
+import com.example.habitbuilder.viewmodel.TempViewModel
 
 class ActionActivity : ComponentActivity() {
-    private val viewModel: ActionViewModel by viewModels()
+    private val viewModel: ActionViewModel by viewModels{ ActionViewModel.Factory }
+    private val tempViewModel: TempViewModel by viewModels()
     private var actionId: Int = -1
     private lateinit var tvActionTitle: TextView
     private lateinit var edActionDescription: EditText
@@ -32,7 +34,7 @@ class ActionActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadAction(this, actionId)
+        viewModel.loadAction(actionId)
     }
 
     fun loadViews(){
@@ -46,15 +48,24 @@ class ActionActivity : ComponentActivity() {
     fun loadObserver(){
         viewModel.action.observe(this) { action ->
             tvActionTitle.text = action.description
-            edActionDescription.setText(action.description)
-            edDurationMinutes.setText(action.durationMinutes.toString())
 
-            if (edActionDescription.text.toString() != action.description) {
+            if (tempViewModel.description.value == null){
                 edActionDescription.setText(action.description)
-                edActionDescription.setSelection(action.description.length)
             }
+            if (tempViewModel.duration.value == null) {
+                edDurationMinutes.setText(action.durationMinutes.toString())
+            }
+        }
 
-            val display = action.durationMinutes.toString()
+        tempViewModel.description.observe(this){ description ->
+            if (edActionDescription.text.toString() != description) {
+                edActionDescription.setText(description)
+                edActionDescription.setSelection(description.length)
+            }
+        }
+
+        tempViewModel.duration.observe(this){ durationMinutes ->
+            val display = durationMinutes.toString()
             if (edDurationMinutes.text.toString() != display) {
                 edDurationMinutes.setText(display)
                 edDurationMinutes.setSelection(display.length)
@@ -64,16 +75,15 @@ class ActionActivity : ComponentActivity() {
 
     fun loadActions(){
         edActionDescription.doAfterTextChanged {
-            viewModel.setActionDescription(this, it.toString())
+            tempViewModel.setActionDescription(it.toString())
         }
 
         edDurationMinutes.doAfterTextChanged {
-            viewModel.setActionDuration(this, it.toString().toIntOrNull())
+            tempViewModel.setActionDuration(it.toString().toIntOrNull())
         }
 
         btnSaveAction.setOnClickListener {
             viewModel.saveAction(
-                this,
                 edActionDescription.text.toString(),
                 edDurationMinutes.text.toString().toIntOrNull() ?: 0
             )
@@ -81,7 +91,7 @@ class ActionActivity : ComponentActivity() {
         }
 
         btnDeleteAction.setOnClickListener {
-            viewModel.deleteAction(this)
+            viewModel.deleteAction()
             finish()
         }
     }
