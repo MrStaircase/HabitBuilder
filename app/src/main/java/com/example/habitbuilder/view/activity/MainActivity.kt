@@ -18,7 +18,7 @@ import com.example.habitbuilder.view.adapter.RoutineAdapter
 import com.example.habitbuilder.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels{ MainViewModel.Factory }
     private lateinit var buttonContainer: RecyclerView
     private lateinit var btnNewRoutine: Button
 
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         NotificationHelper.createChannel(this)
 
         // for debug purposes
-//        viewModel.createTestData(this)
+//        viewModel.createTestData()
     }
 
     fun loadViews(){
@@ -74,6 +74,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadRoutines(this)
+        viewModel.loadRoutines()
     }
 }

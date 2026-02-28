@@ -15,7 +15,7 @@ import com.example.habitbuilder.viewmodel.MainViewModel
 import java.util.Calendar
 
 class CreateRoutineActivity : ComponentActivity() {
-    val viewModel: MainViewModel by viewModels()
+    val viewModel: MainViewModel by viewModels{ MainViewModel.Factory }
     private var triggerTime = Calendar.getInstance()
     private lateinit var edRoutineName: EditText
     private lateinit var btnTriggerTime: Button
@@ -88,7 +88,7 @@ class CreateRoutineActivity : ComponentActivity() {
                     triggerTime = triggerTime
                 )
 
-                viewModel.createRoutine(this, routine)
+                viewModel.createRoutine(routine)
             }
         }
     }

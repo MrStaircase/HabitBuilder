@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.data.entity.ActionEntity
 import com.example.habitbuilder.data.entity.CompletionEntity
@@ -16,7 +19,21 @@ import com.example.habitbuilder.notification.NotificationHelper
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val context: Context) : ViewModel() {
+
+    companion object{
+        val Factory: ViewModelProvider.Factory = object: ViewModelProvider.Factory{
+            @Suppress("UNCHECKED_CAST")
+            override fun <T: ViewModel> create(
+                modelClass: Class<T>,
+                extras: CreationExtras
+            ): T{
+                val application = checkNotNull(extras[APPLICATION_KEY])
+                return MainViewModel(application as Context) as T
+            }
+        }
+    }
+
     private val _routines = MutableLiveData<List<Routine>>()
     val routines: LiveData<List<Routine>> = _routines
 
@@ -29,7 +46,7 @@ class MainViewModel : ViewModel() {
     private val _triggerTime = MutableLiveData<Calendar>().apply { postValue(Calendar.getInstance()) }
     val triggerTime: LiveData<Calendar> = _triggerTime
 
-    fun loadRoutines(context: Context) {
+    fun loadRoutines() {
         viewModelScope.launch {
             _routines.postValue(RoutineRepository.getAll(context).map { Routine(it, emptyList()) })
         }
@@ -43,7 +60,7 @@ class MainViewModel : ViewModel() {
         _triggerTime.postValue(time)
     }
 
-    fun createRoutine(context: Context, routine: RoutineEntity){
+    fun createRoutine(routine: RoutineEntity){
         viewModelScope.launch{
             val newRoutineId = RoutineRepository.insert(context, routine).toInt()
             _routineId.postValue(newRoutineId)
@@ -51,7 +68,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun createTestData(context: Context) {
+    fun createTestData() {
         viewModelScope.launch {
             fun makeCalendar(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0): Calendar {
                 return Calendar.getInstance().apply {
