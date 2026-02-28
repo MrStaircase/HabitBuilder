@@ -5,11 +5,12 @@ import android.content.Intent
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
+import com.example.habitbuilder.data.Action
 import com.example.habitbuilder.data.entity.ActionEntity
 import com.example.habitbuilder.view.activity.ActionActivity
 
 class ActionAdapter(
-    private val actions: List<ActionEntity>,
+    private val actions: List<Action>,
     private val context: Context
 ) : RecyclerView.Adapter<ActionAdapter.ViewHolder>() {
 

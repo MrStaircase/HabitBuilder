@@ -5,11 +5,12 @@ import android.content.Intent
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
+import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.data.entity.RoutineEntity
 import com.example.habitbuilder.view.activity.RoutineActivity
 
 class RoutineAdapter(
-    private val routines: List<RoutineEntity>,
+    private val routines: List<Routine>,
     private val context: Context
 ) : RecyclerView.Adapter<RoutineAdapter.ViewHolder>() {
 

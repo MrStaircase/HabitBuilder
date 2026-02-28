@@ -17,6 +17,6 @@ data class Routine(
         id = routineEntity.id,
         name = routineEntity.name,
         triggerTime = routineEntity.triggerTime,
-        actions = actionEntities.map { Action(it.id, it.description, it.durationMinutes) }
+        actions = actionEntities.map { Action(it) }
     )
 }

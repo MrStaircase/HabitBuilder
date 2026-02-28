@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.habitbuilder.view.adapter.ActionAdapter
 import com.example.habitbuilder.R
+import com.example.habitbuilder.data.Routine
 import com.example.habitbuilder.data.entity.RoutineEntity
 import com.example.habitbuilder.viewmodel.RoutineViewModel
 import java.util.Calendar
@@ -57,8 +58,8 @@ class RoutineActivity : ComponentActivity() {
     }
 
     fun loadObservers(){
-        viewModel.routine.observe(this) { (routine, actions) ->
-            tvRoutineTitle.text = "${routine.name} Routine"
+        viewModel.routine.observe(this) { routine ->
+            tvRoutineTitle.setText("${routine.name} Routine")
 
             btnTime.setOnClickListener {
                 showTimePicker(routine)
@@ -75,7 +76,7 @@ class RoutineActivity : ComponentActivity() {
             )
 
             buttonContainer.layoutManager = LinearLayoutManager(this)
-            buttonContainer.adapter = ActionAdapter(actions, this)
+            buttonContainer.adapter = ActionAdapter(routine.actions, this)
         }
     }
 
@@ -107,7 +108,7 @@ class RoutineActivity : ComponentActivity() {
         }
     }
 
-    fun showTimePicker(routine: RoutineEntity){
+    fun showTimePicker(routine: Routine){
         TimePickerDialog(
             this,
             { _, selectedHour, selectedMinute ->
