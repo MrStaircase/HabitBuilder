@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.habitbuilder.CalendarItem
 import com.example.habitbuilder.Status
 import com.example.habitbuilder.data.DailyCompletion
@@ -18,7 +21,21 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class CalendarViewModel() : ViewModel() {
+class CalendarViewModel(private val context: Context) : ViewModel() {
+
+    companion object{
+        val Factory: ViewModelProvider.Factory = object: ViewModelProvider.Factory{
+            @Suppress("UNCHECKED_CAST")
+            override fun <T: ViewModel> create(
+                modelClass: Class<T>,
+                extras: CreationExtras
+            ): T{
+                val application = checkNotNull(extras[APPLICATION_KEY])
+                return CalendarViewModel(application as Context) as T
+            }
+        }
+    }
+
     private val _routineTitle = MutableLiveData<String>()
     val routineTitle: LiveData<String> = _routineTitle
 
@@ -52,17 +69,17 @@ class CalendarViewModel() : ViewModel() {
         _currentMonthTitle.postValue("$monthName $year")
     }
 
-    fun nextMonth(context: Context, routineId: Int) {
+    fun nextMonth(routineId: Int) {
         currentMonthStart.add(Calendar.MONTH, 1)
-        loadMonth(context, routineId)
+        loadMonth(routineId)
     }
 
-    fun previousMonth(context: Context, routineId: Int) {
+    fun previousMonth(routineId: Int) {
         currentMonthStart.add(Calendar.MONTH, -1)
-        loadMonth(context, routineId)
+        loadMonth(routineId)
     }
 
-    fun loadRoutine(context: Context, routineId: Int) {
+    fun loadRoutine(routineId: Int) {
         viewModelScope.launch {
             val routine = RoutineRepository.get(context, routineId)
             routine?.let {
@@ -71,7 +88,7 @@ class CalendarViewModel() : ViewModel() {
         }
     }
 
-    fun loadMonth(context: Context, routineId: Int) {
+    fun loadMonth(routineId: Int) {
         loadMonthTitle()
 
         viewModelScope.launch {
@@ -147,7 +164,7 @@ class CalendarViewModel() : ViewModel() {
         }
     }
 
-    fun onDayClicked(context: Context, routineId: Int, date: Calendar) {
+    fun onDayClicked(routineId: Int, date: Calendar) {
         viewModelScope.launch {
             val allActions = ActionRepository.getAll(context, routineId)
             val actionsInDate =

@@ -15,7 +15,7 @@ import com.example.habitbuilder.viewmodel.CalendarViewModel
 import java.util.Calendar
 
 class CalendarActivity : ComponentActivity(), OnDayClickListener {
-    private val viewModel: CalendarViewModel by viewModels()
+    private val viewModel: CalendarViewModel by viewModels{ CalendarViewModel.Factory }
     private var routineId: Int = -1
     private lateinit var tvRoutineTitle: TextView
     private lateinit var calendarRecycler: RecyclerView
@@ -33,8 +33,8 @@ class CalendarActivity : ComponentActivity(), OnDayClickListener {
         loadObserves()
         loadActions()
 
-        viewModel.loadRoutine(this, routineId)
-        viewModel.loadMonth(this, routineId)
+        viewModel.loadRoutine(routineId)
+        viewModel.loadMonth(routineId)
     }
 
     fun loadViews(){
@@ -70,15 +70,15 @@ class CalendarActivity : ComponentActivity(), OnDayClickListener {
 
     fun loadActions(){
         btnPreviousMonth.setOnClickListener {
-            viewModel.previousMonth(this, routineId)
+            viewModel.previousMonth(routineId)
         }
 
         btnNextMonth.setOnClickListener {
-            viewModel.nextMonth(this, routineId)
+            viewModel.nextMonth(routineId)
         }
     }
 
     override fun onDayClick(date: Calendar) {
-        viewModel.onDayClicked(this, routineId, date)
+        viewModel.onDayClicked(routineId, date)
     }
 }
